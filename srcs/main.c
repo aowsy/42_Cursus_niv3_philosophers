@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 15:41:25 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/05/29 14:55:38 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/06/02 12:06:06 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@ int	ft_monito(t_data *data)
 		while (i < data->nb_philo && data->status)
 		{
 			cur_time = ft_current_time();
-			if (cur_time > (data->philo[i].eat_pt + data->tm_die))
+			if (cur_time > (data->philo[i].eat_pt + data->tm_die)
+				&& (data->nb_eat < 0 || data->philo[i].ct_eat != data->nb_eat))
 			{
 				data->status = 0;
 				ft_message(&(data->philo[i]), 5);
@@ -77,10 +78,18 @@ int	main(int ac, char **av)
 	if (ft_philo_init(&data))
 		return (1);
 	if (ft_start(&data))
-		return (ft_error("xxx\n", &data, 1));
-	if (ft_monito(&data))
+	{
+		ft_clean_philo(&data);
 		return (1);
+	}
+	ft_monito(&data);
 	if (ft_end(&data))
 		return (1);
+	if (ft_clean_philo(&data))
+		return (1);
+	pthread_mutex_destroy(&(data.m_each));
+	pthread_mutex_destroy(&(data.plock));
+	usleep(300);
+	system("leaks philo");
 	return (0);
 }

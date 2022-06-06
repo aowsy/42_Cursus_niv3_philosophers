@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/28 16:32:49 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/05/29 15:09:50 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/06/02 10:23:36 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int	ft_parsing(int ac, char **av, t_data *data)
 		data->nb_eat = ft_atoi_philo(av[5]);
 	else
 		data->nb_eat = -1;
-	if (data->nb_philo <= 1 || data->nb_philo > 200 || data->tm_die < 60
+	if (data->nb_philo < 1 || data->nb_philo > 200 || data->tm_die < 60
 		|| data->tm_eat < 60 || data->tm_sleep <= 60
 		|| (ac == 6 && data->nb_eat < 0))
 		return (1);
@@ -62,7 +62,7 @@ void	ft_fill_philo(t_data *data, int i)
 	data->philo[i].plock = &(data->plock);
 	data->philo[i].eat_pt = ft_current_time();
 	data->philo[i].each = &(data->each);
-	data->philo[i].meach = data->philo[0].meach;
+	data->philo[i].m_each = &(data->m_each);
 	return ;
 }
 
@@ -73,20 +73,19 @@ int	ft_philo_init(t_data *data)
 	data->philo = (t_philo *)malloc(sizeof(t_philo) * data->nb_philo);
 	if (!data->philo)
 		return (ft_error("Error: Malloc\n", data, 0));
-	if (pthread_mutex_init(&(data->plock), NULL))
-		return (ft_error("Error: Mutex init\n", data, 0));
-	if (pthread_mutex_init(&(data->philo[0].meach), NULL))
+	if (pthread_mutex_init(&(data->plock), NULL)
+		|| pthread_mutex_init(&(data->m_each), NULL))
 		return (ft_error("Error: Mutex init\n", data, 0));
 	i = 0;
 	while (i < data->nb_philo)
 	{
 		if (i)
-			data->philo[i].fork_l = data->philo[i - 1].fork_r;
+			data->philo[i].fork_l = &(data->philo[i - 1].fork_r);
 		if (pthread_mutex_init(&(data->philo[i].fork_r), NULL))
 			return (ft_error("Error: Mutex\n", data, 0));
 		ft_fill_philo(data, i);
 		i++;
 	}
-	data->philo[0].fork_l = data->philo[data->nb_philo - 1].fork_r;
+	data->philo[0].fork_l = &(data->philo[data->nb_philo - 1].fork_r);
 	return (0);
 }

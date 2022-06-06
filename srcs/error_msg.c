@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/29 10:01:19 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/05/29 14:43:03 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/05/31 17:56:38 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,17 +48,14 @@ int	ft_clean_philo(t_data *data)
 	i = 0;
 	while (i < data->nb_philo)
 	{
-		if (pthread_mutex_destroy(&(data->philo[i].fork_r)))
-			return (ft_error("Error: Mutex destroy\n", data, 0));
-		if (pthread_detach(data->philo[i].pth))
-			return (ft_error("Error: Thread detach\n", data, 0));
+		pthread_mutex_destroy(&(data->philo[i].fork_r));
+		pthread_detach(data->philo[i].pth);
 		i++;
 	}
 	free(data->philo);
 	return (0);
 }
 
-//	data->status
 int	ft_error(char *str, t_data *data, int stat)
 {
 	int	i;
@@ -75,15 +72,10 @@ int	ft_error(char *str, t_data *data, int stat)
 	else
 	{
 		if (pthread_mutex_lock(&(data->plock)))
-			return (ft_error("Error: Mutex lock\n", data, 0));
+			return (1);
 		if (ft_clean_philo(data))
 			return (1);
-		i = 0;
-		while (str[i])
-		{
-			write(2, &str[i], 1);
-			i++;
-		}
+		ft_error(str, data, 0);
 	}
 	return (1);
 }

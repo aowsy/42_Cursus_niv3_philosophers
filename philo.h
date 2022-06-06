@@ -6,7 +6,7 @@
 /*   By: mdelforg <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/24 15:48:39 by mdelforg          #+#    #+#             */
-/*   Updated: 2022/05/29 15:07:30 by mdelforg         ###   ########.fr       */
+/*   Updated: 2022/05/31 17:43:11 by mdelforg         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ typedef struct s_philo
 {
 	pthread_t		pth;
 	pthread_mutex_t	fork_r;
-	pthread_mutex_t	fork_l;
-	pthread_mutex_t	meach;
+	pthread_mutex_t	*fork_l;
+	pthread_mutex_t	*m_each;
 	pthread_mutex_t	*plock;
 	int				ppos;
 	int				tm_die;
@@ -49,6 +49,7 @@ typedef struct s_data
 	int				each;
 	int				status;
 	pthread_mutex_t	plock;
+	pthread_mutex_t	m_each;
 	t_philo			*philo;
 }	t_data;
 
@@ -63,6 +64,7 @@ int				ft_philo_init(t_data *data);
 /*							error_msg.c						*/
 int				ft_error(char *str, t_data *data, int stat);
 int				ft_message(t_philo *philo, int type);
+int				ft_clean_philo(t_data *data);
 
 /*							libc.c							*/
 char			*ft_strchr(const char *s, int c);
